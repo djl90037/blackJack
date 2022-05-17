@@ -1,7 +1,10 @@
 let values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace']
 let suits = [' of Clubs', ' of Diamonds', ' of Spades', ' of Hearts']
-let card;
 let deck = [];
+let card;
+let card2;
+let scoreCard;
+let scoreCard2;
 
 function createDeck() {
   for (var i = 0; i < suits.length; i++) {
@@ -28,67 +31,58 @@ function getScore(card) {
   } else {
     score = 10;
   }
-
   return score;
 }
 
-
-
-let initialScore;
-
 function initialHand() {
+  card = deck.splice(Math.floor(Math.random() * deck.length), 1).toString();
+  card2 = deck.splice(Math.floor(Math.random() * deck.length), 1).toString();
 
-  let card = deck.splice(Math.floor(Math.random() * deck.length), 1).toString();
-  getScore(card);
-  let card2 = deck.splice(Math.floor(Math.random() * deck.length), 1).toString();
-  getScore(card2);
+  scoreCard = getScore(card);
+  scoreCard2 = getScore(card2);
 
-  let scoreCard;
-  let scoreCard2;
+  let hand = new Array();
+  hand.push(scoreCard);
+  hand.push(scoreCard2);
 
-  if (card[0] == 'A' && card2[0] == 'A') {
-    scoreCard2 = 1;
-  } else {
-    scoreCard2 = getScore(card2)
-    scoreCard = getScore(card);
+
+  function calcScore() {
+    let updatedScore = 0;
+    for (let i = 0; i < hand.length; i++) {
+      updatedScore += hand[i];
+    }
+    for (let j = 0; j < hand.length; j++) { // looping back over the hand
+      if (hand[j] === 11 && updatedScore > 21) { // and checking to see any presence of Aces that could bust the hand
+        updatedScore -= 10; // changing their value to 1 if true
+      }
+    }
+    return updatedScore
   }
 
-  initialScore = scoreCard + scoreCard2;
+  calcScore();
 
-
-  if (initialScore === 21) {
+  if (calcScore() === 21) {
     alert(`You've been dealt ${card} and ${card2}. \nBlackjack! You win!🎇`)
     playAgain();
     if (playAgain !== 'yes') {
       return;
     }
   } else {
-    alert(`You've been dealt ${card} and ${card2}. \nYour score is ${initialScore}`);
+    alert(`You've been dealt ${card} and ${card2}. \nYour score is ${calcScore()}`);
   }
 
-
-
-
-
-  let hitMe = prompt(`Score: ${initialScore}. \nType hit for another card, or hold to stay`);
+  let hitMe = prompt(`Score: ${calcScore()}. \nType hit for another card, or hold to stay`);
 
   let scoreCard3;
   let card3;
 
   if (hitMe === 'hit') {
     card3 = hitAgain();
-    if (card3[0] == 'A' && initialScore > 10) {
-      scoreCard3 = 1;
-    } else if (card3[0] == 'A') {
-      scoreCard3 = 11;
-    } else if ((card[0] == 'A' || card2[0] == 'A') && (Math.abs(getScore(card3)) + initialScore) > 21) {
-      initialScore -= 10; // changing ace to a 1 
-      scoreCard3 = Math.abs(getScore(card3));
-    } else {
-      scoreCard3 = Math.abs(getScore(card3));
-    }
+    scoreCard3 = getScore(card3)
+    hand.push(scoreCard3);
+    calcScore();
   } else {
-    alert(`Game over! Score: ${initialScore}`);
+    alert(`Game over! Score: ${calcScore()}`);
     playAgain();
     if (playAgain !== 'yes') {
       return;
@@ -96,36 +90,28 @@ function initialHand() {
   }
 
 
-
-
-
-
-  let updatedScore;
-  updatedScore = scoreCard3 + initialScore
   let card4;
   let scoreCard4;
 
-  if (updatedScore < 21) {
-    hitTwice = prompt(`You drew a ${card3}, and your score is now ${updatedScore}. \nType hit for another card, or hold to stay`);
+  if (calcScore() < 21) {
+    hitTwice = prompt(`You drew a ${card3}, and your score is now ${calcScore()}. \nType hit for another card, or hold to stay`);
 
     if (hitTwice == 'hit') {
       card4 = hitAgain();
-      if (card4[0] == 'A' && updatedScore > 10) {
-        scoreCard4 = 1
-      } else {
-        scoreCard4 = Math.abs(getScore(card4));
-      }
+      scoreCard4 = getScore(card4);
+      hand.push(scoreCard4);
+      calcScore();
     } else {
-      alert(`Game over! Score: ${updatedScore}.`);
+      alert(`Game over! Score: ${calcScore()}.`);
       playAgain();
       if (playAgain !== 'yes') {
         return;
       }
     }
-  } else if (updatedScore === 21) {
+  } else if (calcScore() === 21) {
     alert(`You drew a ${card3}. \nBlackjack! You win!🎇`)
     playAgain();
-  } else if (updatedScore > 21) {
+  } else if (calcScore() > 21) {
     alert(`You drew a ${card3}. \n🚩Bust!🚩 You lose!`)
     playAgain();
     if (playAgain !== 'yes') {
@@ -133,41 +119,32 @@ function initialHand() {
     }
   }
 
-  updatedScore += scoreCard4;
+
   let card5;
   let scoreCard5;
 
-  if (updatedScore < 21) {
-    hitThrice = prompt(`You drew a ${card4}, and your score is now ${updatedScore}. \nType hit for another card, or hold to stay`);
+  if (calcScore() < 21) {
+    hitThrice = prompt(`You drew a ${card4}, and your score is now ${calcScore()}. \nType hit for another card, or hold to stay`);
 
     if (hitThrice == 'hit') {
       card5 = hitAgain();
-      console.log(card5);
-      if (card5[0] == 'A' && updatedScore > 10) {
-        scoreCard5 = 1;
-      } else if (card5[0] == 'A') {
-        scoreCard5 = 11;
-      } else if ((card[0] == 'A' || card2[0] == 'A' || card3[0] == 'A') && (Math.abs(getScore(card5)) + updatedScore) > 21) {
-        updatedScore -= 10 // changing ace to a 1
-        scoreCard5 = Math.abs(getScore(card5));
-      } else {
-        scoreCard5 = getScore(card5);
-      }
-      updatedScore += scoreCard5
+      scoreCard5 = getScore(card5);
+      hand.push(scoreCard5);
+      calcScore();
     } else {
-      alert(`Game over! Score: ${updatedScore}.`);
+      alert(`Game over! Score: ${calcScore()}.`);
       playAgain();
       if (playAgain !== 'yes') {
         return;
       }
     }
-  } else if (updatedScore === 21) {
+  } else if (calcScore() === 21) {
     alert(`You drew a ${card4}. \nBlackjack! You win!🎇`);
     playAgain();
     if (playAgain !== 'yes') {
       return;
     }
-  } else if (updatedScore > 21) {
+  } else if (calcScore() > 21) {
     alert(`You drew a ${card4}. \n🚩Bust!🚩 You lose!`);
     playAgain();
     if (playAgain !== 'yes') {
@@ -176,19 +153,19 @@ function initialHand() {
 
   }
 
-  if (updatedScore === 21) {
+  if (calcScore() === 21) {
     alert(`You drew a ${card5}. \nBlackjack! You win!🎇`);
     playAgain();
     if (playAgain !== 'yes') {
       return;
     }
-  } else if (updatedScore < 21) {
+  } else if (calcScore() < 21) {
     alert(`You drew a ${card5}. 5 Card Charlie! You win!🎇`);
     playAgain();
     if (playAgain !== 'yes') {
       return;
     }
-  } else if (updatedScore > 21) {
+  } else if (calcScore() > 21) {
     alert(`You drew a ${card4}. \n🚩Bust!🚩 You lose!`);
     playAgain();
     if (playAgain !== 'yes') {
@@ -210,6 +187,7 @@ function playAgain() {
     initialHand();
   } else {
     alert(`Bye!`);
+    return;
   }
 }
 
