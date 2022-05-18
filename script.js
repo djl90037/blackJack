@@ -32,46 +32,47 @@ function drawCard() {
 let hand = []; // array of cards
 let handValue = []; // array of scores for every card in hand
 
+function calcScore() {
+  let updatedScore = 0;
+  for (let i = 0; i < handValue.length; i++) {
+    updatedScore += handValue[i];
+  }
+  for (let j = 0; j < handValue.length; j++) { // looping back over the scores in hand
+    if (handValue[j] === 11 && updatedScore > 21) { // and checking to see any presence of Aces that could bust the hand
+      updatedScore -= 10; // changing their value to 1 if true
+    }
+  }
+  if (updatedScore < 21) {
+    alert(`Your hand is ${hand.join(', ')}. \nYour score is ${updatedScore}`);
+    let hitMe = prompt(`Score: ${updatedScore}. Type hit for another card or hold to stay`);
+    if (hitMe === 'hit') {
+      drawCard();
+      calcScore();
+    } else {
+      alert(`Game Over! Score: ${updatedScore}.`);
+      playAgain();
+      if (playAgain !== 'yes') {
+        return;
+      }
+    }
+  } else if (updatedScore === 21) {
+    alert(`You've been dealt ${hand.join(', ')}. \nBlackjack! You win!🎇`)
+    playAgain();
+    if (playAgain !== 'yes') {
+      return;
+    }
+  } else if (updatedScore > 21) {
+    alert(`Your hand is ${hand.join(', ')}. \nScore: ${updatedScore}. 🚩Bust!🚩 You lose!`)
+    playAgain();
+    if (playAgain !== 'yes') {
+      return;
+    }
+  }
+}
+
 function playerHand() {
   drawCard();
   drawCard();
-  function calcScore() {
-    let updatedScore = 0;
-    for (let i = 0; i < handValue.length; i++) {
-      updatedScore += handValue[i];
-    }
-    for (let j = 0; j < handValue.length; j++) { // looping back over the scores in hand
-      if (handValue[j] === 11 && updatedScore > 21) { // and checking to see any presence of Aces that could bust the hand
-        updatedScore -= 10; // changing their value to 1 if true
-      }
-    }
-    if (updatedScore < 21) {
-      alert(`Your hand is ${hand.join(', ')}. \nYour score is ${updatedScore}`);
-      let hitMe = prompt(`Score: ${updatedScore}. Type hit for another card or hold to stay`);
-      if (hitMe === 'hit') {
-        drawCard();
-        calcScore();
-      } else {
-        alert(`Game Over! Score: ${updatedScore}.`);
-        playAgain();
-        if (playAgain !== 'yes') {
-          return;
-        }
-      }
-    } else if (updatedScore === 21) {
-      alert(`You've been dealt ${hand.join(', ')}. \nBlackjack! You win!🎇`)
-      playAgain();
-      if (playAgain !== 'yes') {
-        return;
-      }
-    } else if (updatedScore > 21) {
-      alert(`Your hand is ${hand.join(', ')}. \nScore: ${updatedScore}. 🚩Bust!🚩 You lose!`)
-      playAgain();
-      if (playAgain !== 'yes') {
-        return;
-      }
-    }
-  }
   calcScore();
 }
 
@@ -94,3 +95,5 @@ function playAgain() {
 }
 
 playGame()
+
+
